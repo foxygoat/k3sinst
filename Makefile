@@ -46,7 +46,7 @@ install-tools:
 
 # --- Deploy ------------------------------------------------------------------
 
-DEPLOYMENTS = sealed-secrets cert-manager metallb
+DEPLOYMENTS = sealed-secrets cert-manager metallb traefik
 KUBECONFIG=$(K3S_DATA_DIR)/etc/kubeconfig.yaml
 KUBECFG=kubecfg
 KUBECTL=kubectl

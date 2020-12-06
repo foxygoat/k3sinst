@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik
+  namespace: traefik
+  labels:
+    app: traefik
+data:
+  static.yaml: |
+    api:
+      dashboard: true
+      insecure: true
+    ping: {}
+    log:
+      level: 'INFO'
+    entryPoints:
+      http:
+        address: ':80'
+        http:
+          redirections:
+            entryPoint:
+              to: 'https'
+      https:
+        address: ':443'
+        http:
+          tls: {}
+      internal-http:
+        address: ':81'
+        http:
+          redirections:
+            entryPoint:
+              # This redirects to internal-https. We need to use the port
+              # on the service, not the pod, and the LB service is on
+              # port 443, as internal and external are different LB
+              # services.
+              to: ':443'
+      internal-https:
+        address: ':444'
+        http:
+          tls: {}
+    providers:
+      kubernetesIngress: {}
+      file:
+        directory: '/config'
