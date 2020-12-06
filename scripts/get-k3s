@@ -1,0 +1,98 @@
+#!/bin/bash
+# Fetch latest release of k3s if we don't have it.
+#-----------------------------------------------------------------------------
+
+: "${INSTALL_DIR:=/usr/local/sbin}"
+
+version_only=false
+
+#-----------------------------------------------------------------------------
+usage() {
+  printf 'Usage %s [-V]\n' "${0##*/}"
+  printf 'Options:\n'
+  printf '  -V  Show latest version only. Do not install\n'
+}
+
+#-----------------------------------------------------------------------------
+main() {
+  parse_args "$@"
+
+  case $(uname -m) in
+    x86_64)
+      k3sbin='k3s' ;;
+    armv7l)
+      k3sbin='k3s-armhf' ;;
+    aarch64)
+      k3sbin='k3s-arm64' ;;
+    *)
+      printf 'Unknown architecture: %s\n' "$(uname -m)" >&2
+      exit 1
+  esac
+
+  if "${version_only}"; then
+    get_release_info
+    exit 0
+  fi
+
+  declare -A info
+  while IFS='=' read -r key value; do
+    info["${key}"]="${value}"
+  done <<< "$(get_release_info)"
+
+  if [[ -z "${info[name]}" ]]; then
+    printf 'Missing release version\n'
+    exit 1
+  fi
+
+  if [[ -z "${info[url]}" ]]; then
+    printf 'Missing release url\n'
+    exit 1
+  fi
+
+  exename="k3s-${info[name]}"
+  target="${INSTALL_DIR}/${exename}"
+  if [[ -x "${target}" ]]; then
+    printf 'Already have version %s in %s\n' "${info[name]}" "${INSTALL_DIR}"
+    exit 0
+  fi
+
+  printf 'Downloading version %s\n' "${info[name]}"
+
+  curl -sL -o "${target}" "${info[url]}"
+  chmod 755 "${target}"
+
+  ln -nsf "${exename}" "${INSTALL_DIR}/k3s"
+}
+
+#-----------------------------------------------------------------------------
+parse_args() {
+  OPTSTRING=':V'
+  while getopts "${OPTSTRING}" opt; do
+    case "${opt}" in
+      V)
+        version_only=true
+        ;;
+      \?)
+        printf 'Invalid option: -%s\n\n' "${OPTARG}" >&2
+        usage >&2
+        exit 1
+        ;;
+      :)
+        printf 'Option -%s requires an argument\n\n' "${OPTARG}" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+}
+
+#-----------------------------------------------------------------------------
+get_release_info() {
+  curl -sL https://api.github.com/repos/rancher/k3s/releases/latest \
+    | jq -r '{name: .name, url: .assets[] | select(.name == "'"${k3sbin}"'") | .browser_download_url} | 
+          to_entries | .[] | .key + "=" + (.value | tostring)'
+}
+
+#-----------------------------------------------------------------------------
+[[ "$(caller)" != 0\ * ]] || main "$@"

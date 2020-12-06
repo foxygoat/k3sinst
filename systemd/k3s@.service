@@ -1,0 +1,31 @@
+[Unit]
+Description=K3s Kubernetes
+Documentation=https://k3s.io
+Wants=network-online.target
+After=network-online.target
+ConditionFileIsExecutable=/usr/local/sbin/k3s
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=notify
+KillMode=process
+Delegate=yes
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+ExecStartPre=-/sbin/modprobe br_netfilter
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart=/usr/local/sbin/k3s %i \
+	--data-dir=/opt/k3s \
+	--default-local-storage-path=/opt/k3s/pv \
+	--write-kubeconfig=/opt/k3s/etc/kubeconfig.yaml \
+	--write-kubeconfig-mode=0640 \
+	--kube-proxy-arg=ipvs-strict-arp \
+	--disable=servicelb \
+	--disable=traefik
