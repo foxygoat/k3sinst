@@ -46,7 +46,7 @@ install-tools:
 
 # --- Deploy ------------------------------------------------------------------
 
-DEPLOYMENTS = sealed-secrets cert-manager
+DEPLOYMENTS = sealed-secrets cert-manager metallb
 KUBECONFIG=$(K3S_DATA_DIR)/etc/kubeconfig.yaml
 KUBECFG=kubecfg
 KUBECTL=kubectl
@@ -61,4 +61,7 @@ deploy-%:
 undeploy-%:
 	$(KUBECTL) delete -R -f manifests/$*
 
-.PHONY: deploy undeploy
+deploy-metallb-secret:
+	$(KUBECFG) -V rand="$$(openssl rand -base64 128)" update manifests/metallb/memberlist.jsonnet
+
+.PHONY: deploy undeploy deploy-metallb-secret
