@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: whoami
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: whoami
+  name: whoami
+spec:
+  selector:
+    app: whoami
+  ports:
+    - name: http
+      port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: whoami
+  name: whoami
+  labels:
+    app: whoami
+spec:
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+        - name: whoami
+          image: containous/whoami:v1.5.0
+          securityContext:
+            capabilities:
+              add: ['NET_BIND_SERVICE']
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 80
+
