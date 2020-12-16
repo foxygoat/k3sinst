@@ -42,10 +42,11 @@ uninstall:
 
 install-tools:
 	(cd /tmp; GO111MODULE=on go get github.com/bitnami/kubecfg)
+	(cd /tmp; GO111MODULE=on go get github.com/bitnami-labs/sealed-secrets/cmd/kubeseal)
 
 # --- Deploy ------------------------------------------------------------------
 
-DEPLOYMENTS =
+DEPLOYMENTS = sealed-secrets
 KUBECONFIG=$(K3S_DATA_DIR)/etc/kubeconfig.yaml
 KUBECFG=kubecfg
 KUBECTL=kubectl
