@@ -1,0 +1,25 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: whoami
+  name: whoami-camh
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: https
+spec:
+  tls:
+    - hosts:
+      - whoami.camh.dev
+      secretName: whoami-camh-https-cert
+  rules:
+    - host: whoami.camh.dev
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: whoami
+                port: 
+                  name: http

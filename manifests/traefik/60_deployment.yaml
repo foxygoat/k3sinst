@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik
+  namespace: traefik
+  labels:
+    app: traefik
+spec:
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik
+      containers:
+        - name: traefik
+          image: traefik:v2.3.4
+          args: 
+            - '--configFile=/config/static.yaml'
+          securityContext:
+            capabilities:
+              add: ['NET_BIND_SERVICE']
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 80
+            - name: https
+              protocol: TCP
+              containerPort: 443
+            - name: traefik
+              protocol: TCP
+              containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          readinessProbe: 
+            httpGet:
+              path: /ping
+              port: traefik
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: traefik
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+      volumes:
+        - name: config
+          configMap:
+            name: traefik
