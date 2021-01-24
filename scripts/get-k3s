@@ -88,9 +88,27 @@ parse_args() {
 }
 
 #-----------------------------------------------------------------------------
+
+gh_releases_url='https://api.github.com/repos/rancher/k3s/releases'
+
+# The github-tagged release "latest" is not necessarily the latest. The latest
+# tag is based in when the release was created rather than the version. k3s
+# releases multiple versions at the same time, so the "latest" release may not
+# actually be the latest depending on random build timing. Use sort -V to
+# sort the versions to find the latest release. We exclude pre-releases because
+# we dont want them, but they also sort incorrectly.
+get_latest_release() {
+  curl --silent --location "${gh_releases_url}" \
+    | jq --raw-output '.[] | select(.prerelease == false) | .tag_name + " " + (.id | tostring)' \
+    | sort --version-sort --reverse \
+    | head --lines=1 \
+    | cut --delimiter=" " --fields=2
+}
+
 get_release_info() {
-  curl -sL https://api.github.com/repos/rancher/k3s/releases/latest \
-    | jq -r '{name: .name, url: .assets[] | select(.name == "'"${k3sbin}"'") | .browser_download_url} | 
+  curl --silent --location "${gh_releases_url}/$(get_latest_release)" \
+    | jq --raw-output \
+        '{name: .name, url: .assets[] | select(.name == "'"${k3sbin}"'") | .browser_download_url} | 
           to_entries | .[] | .key + "=" + (.value | tostring)'
 }
 

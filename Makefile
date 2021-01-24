@@ -9,9 +9,11 @@ export INSTALL_DIR K3S_DATA_DIR
 
 install: install-k3s install-k3s-links install-systemd install-dirs
 
-install-k3s:
+install-k3s: $(INSTALL_DIR)/k3s-killall.sh
 	sudo ./scripts/get-k3s
-	sudo install -m 0755 -o root -g root scripts/k3s-killall.sh $(INSTALL_DIR)
+
+$(INSTALL_DIR)/k3s-killall.sh: scripts/k3s-killall.sh
+	sudo install -m 0755 -o root -g root $< $@
 
 install-k3s-links: | $(K3S_SYMLINKS:%=$(INSTALL_DIR)/%)
 $(K3S_SYMLINKS:%=$(INSTALL_DIR)/%):
