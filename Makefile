@@ -1,7 +1,8 @@
 # --- Install -----------------------------------------------------------------
 
+DIR = /opt/k3s
 INSTALL_DIR = /usr/local/sbin
-K3S_DATA_DIR = /opt/k3s
+K3S_DATA_DIR = $(DIR)
 K3S_SYMLINKS = kubectl crictl ctr
 SYSTEMD_DIR = /etc/systemd/system
 
@@ -20,6 +21,8 @@ $(K3S_SYMLINKS:%=$(INSTALL_DIR)/%):
 	sudo ln -nsf k3s $@
 
 install-systemd: $(SYSTEMD_DIR)/multi-user.target.wants/k3s@server.service
+	echo 'K3S_DATA_DIR=$(K3S_DATA_DIR)' | sudo tee $(SYSTEMD_DIR)/k3s.env > /dev/null
+
 $(SYSTEMD_DIR)/multi-user.target.wants/k3s@server.service: $(SYSTEMD_DIR)/k3s@.service
 	sudo systemctl enable k3s@server
 
@@ -35,7 +38,7 @@ uninstall:
 	-sudo $(INSTALL_DIR)/k3s-killall.sh
 	-sudo systemctl disable k3s@server
 	sudo systemctl daemon-reload
-	sudo rm -f $(SYSTEMD_DIR)/k3s@.service
+	sudo rm -f $(SYSTEMD_DIR)/k3s@.service $(SYSTEMD_DIR)/k3s.env
 	sudo rm -f $(INSTALL_DIR)/k3s-* $(INSTALL_DIR)/k3s
 	sudo rm -f $(K3S_SYMLINKS:%=$(INSTALL_DIR)/%)
 	sudo rm -rf $(K3S_DATA_DIR)
@@ -49,7 +52,7 @@ install-tools:
 # --- Deploy ------------------------------------------------------------------
 
 DEPLOYMENTS = sealed-secrets cert-manager metallb traefik
-KUBECONFIG=$(K3S_DATA_DIR)/etc/kubeconfig.yaml
+KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 KUBECFG=kubecfg
 KUBECTL=kubectl
 export KUBECONFIG

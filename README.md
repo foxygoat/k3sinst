@@ -31,6 +31,11 @@ or
 
     make install-k3s install-k3s-links install-systemd install-dirs
 
+This will install to `/opt/k3s` by default. To change this, set the
+`DIR` variable on the command line:
+
+    make DIR=/srv/k3s install
+
 To undo all that `make install` does, run
 
     make uninstall
@@ -41,20 +46,19 @@ persistent storage.
 
 ### Launching k3s
 
+    systemctl start k3s@server
+
 k3s is launched from systemd using the systemd service file in the
 `systemd` directory. It is a service template and is installed as either
 `k3s@server` or `k3s@agent`. The former is a master and node, the latter
 is just a node. Currently it is only installed as a server.
 
 k3s is started with some defaults hard-coded into the systemd service
-file. It puts all the data in the `/opt/k3s` directory. k3s includes a
-local path provider (https://rancher.com/docs/k3s/latest/en/storage/)
-which is configured to put data under `/opt/k3s/pv`. You may want to
-back this up to preserve persistent volumes used by workloads.
-
-The install does not actually start k3s - start it manually with:
-
-    systemctl start k3s@server
+file. It puts all the data in the `/opt/k3s` directory (or whatever
+`DIR` was set to). k3s includes a local path provider
+(https://rancher.com/docs/k3s/latest/en/storage/) which is configured to
+put data under `/opt/k3s/pv`. You may want to back this up to preserve
+persistent volumes used by workloads.
 
 If you have re-run `make install` to install a newer version of k3s,
 restart it with:
@@ -65,12 +69,14 @@ restart it with:
 
 When k3s starts, it puts a kubeconfig file in `/opt/k3s/etc` that
 contains the connection parameters and keys/certs to talk to the API
-server. A symlink for `kubectl` is installed in `/usr/local/sbin` that
-knows to look at that kubeconfig file, but if other tools are used that
-need to talk to the API server (such as kubecfg installed by
-install-tools), you will need to setup your environment:
+server. It creates a symlink to that kubeconfig file as
+`/etc/rancher/k3s/k3s.yaml`. A symlink for `kubectl` is installed in
+`/usr/local/sbin` that knows to look at that kubeconfig file, but if
+other tools are used that need to talk to the API server (such as
+kubecfg installed by `make install-tools`), you will need to setup your
+environment:
 
-    export KUBECONFIG=/opt/k3s/etc/kubeconfig.yaml
+    export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 Access to the kubeconfig file gives admin-level access to the cluster.
 It is protected so that it is only readable by `root` and members of the
