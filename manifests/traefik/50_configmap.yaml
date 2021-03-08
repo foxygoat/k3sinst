@@ -41,6 +41,8 @@ data:
         address: ':444'
         http:
           tls: {}
+      internal-http-no-redirect:  # Internal http
+        address: ':8080'
     providers:
       kubernetesIngress: {}
       file:
