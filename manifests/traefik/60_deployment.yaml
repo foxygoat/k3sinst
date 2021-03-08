@@ -33,7 +33,7 @@ spec:
               containerPort: 443
             - name: traefik
               protocol: TCP
-              containerPort: 8080
+              containerPort: 9090
           volumeMounts:
             - name: config
               mountPath: /config
