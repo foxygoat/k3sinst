@@ -47,3 +47,5 @@ data:
       kubernetesIngress: {}
       file:
         directory: '/config'
+    serversTransport:
+      insecureSkipVerify: true
