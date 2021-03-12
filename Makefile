@@ -70,3 +70,13 @@ deploy-metallb-secret:
 	$(KUBECFG) -V rand="$$(openssl rand -base64 128)" update manifests/metallb/memberlist.jsonnet
 
 .PHONY: deploy undeploy deploy-metallb-secret
+
+# --- Update CRDs -------------------------------------------------------------
+
+TRAEFIK_HELM_VERSION = v9.12.3
+TRAEFIK_HELM_ARCHIVE = https://github.com/traefik/traefik-helm-chart/archive
+
+update-crds-traefik:
+	curl -sL $(TRAEFIK_HELM_ARCHIVE)/$(TRAEFIK_HELM_VERSION).tar.gz \
+		| tar zxf - -C manifests/traefik --strip-components=2 \
+			--wildcards '*/traefik/crds/*'
