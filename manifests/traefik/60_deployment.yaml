@@ -18,7 +18,7 @@ spec:
       serviceAccountName: traefik
       containers:
         - name: traefik
-          image: traefik:v2.3.4
+          image: traefik:v2.4.8
           args: 
             - '--configFile=/config/static.yaml'
           securityContext:
