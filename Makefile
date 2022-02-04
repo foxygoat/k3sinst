@@ -77,7 +77,7 @@ deploy-metallb-secret:
 
 # --- Update CRDs -------------------------------------------------------------
 
-TRAEFIK_HELM_VERSION = v9.17.6
+TRAEFIK_HELM_VERSION = v10.14.0
 TRAEFIK_HELM_ARCHIVE = https://github.com/traefik/traefik-helm-chart/archive
 
 update-crds-traefik:
