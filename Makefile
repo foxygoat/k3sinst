@@ -9,6 +9,7 @@ SYSTEMD_DIR = /etc/systemd/system
 export INSTALL_DIR K3S_DATA_DIR
 
 install: install-k3s install-k3s-links install-systemd install-dirs
+upgrade: install-k3s restart-k3s
 
 install-k3s: $(INSTALL_DIR)/k3s-killall.sh
 	sudo ./scripts/get-k3s
@@ -29,6 +30,9 @@ $(SYSTEMD_DIR)/multi-user.target.wants/k3s@server.service: $(SYSTEMD_DIR)/k3s@.s
 $(SYSTEMD_DIR)/k3s@.service: systemd/k3s@.service
 	sudo install -m 644 -o root -g root $< $@
 	sudo systemctl daemon-reload
+
+restart-k3s:
+	sudo systemctl restart k3s@server
 
 install-dirs:
 	sudo install -d -m 0750 -g adm $(K3S_DATA_DIR)/pv

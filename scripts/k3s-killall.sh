@@ -3,7 +3,7 @@
 
 : "${K3S_DATA_DIR:=/var/lib/rancher/k3s}"
 for bin in "${K3S_DATA_DIR}"/data/**/bin/; do
-    [ -d "$bin" ] && export PATH=$PATH:$bin:$bin/aux
+    [ -d "$bin" ] && export PATH="$PATH:$bin:$bin/aux"
 done
 
 set -x
