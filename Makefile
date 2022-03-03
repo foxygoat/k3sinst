@@ -75,6 +75,25 @@ deploy-metallb-secret:
 
 .PHONY: deploy undeploy deploy-metallb-secret
 
+# --- Secret Saving -----------------------------------------------------------
+
+save-secrets: save-sealed-secrets
+clean-secrets: clean-sealed-secrets
+
+SS_SECRET = manifests/sealed-secrets/01_master.yaml
+
+save-sealed-secrets:
+	$(KUBECTL) get secret -n kube-system \
+		-l sealedsecrets.bitnami.com/sealed-secrets-key \
+		-o yaml \
+		> $(SS_SECRET)
+
+clean-sealed-secrets:
+	shred --zero --remove $(SS_SECRET)
+
+.PHONY: clean-secrets save-secrets
+.PHONY: clean-sealed-secrets save-sealed-secrets
+
 # --- Update CRDs -------------------------------------------------------------
 
 TRAEFIK_HELM_VERSION = v10.14.0
