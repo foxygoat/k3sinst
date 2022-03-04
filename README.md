@@ -83,6 +83,38 @@ It is protected so that it is only readable by `root` and members of the
 `adm` group. Add yourself to the `adm` group if you want to run
 Kubernetes commands as a regular user.
 
+### Reinstalling
+
+For continuity through an uninstall and install (re-installation) some
+secrets may need to be preserved. Before running `make uninstall` you
+can run `make save-secrets` which will pull secrets from the cluster and
+put it in the manifest directory ready to be installed in the next
+cluster.
+
+The secrets are left unencrypted in the filesystem, so when you are done
+re-installing the cluster, run `make clean-secrets` to remove them.
+
+The full re-install sequence would be (if you install metallb):
+
+    make save-secrets
+    make uninstall
+    make install
+    make deploy-metallb-secret
+    make deploy
+    make clean-secrets
+
+If you don't install metallb:
+    make save-secrets
+    make uninstall
+    make install
+    make deploy-sealed-secrets deploy-cert-manager deploy-traefik
+    make clean-secrets
+
+At this stage, the only secrets saved are the sealed-secrets sealing
+keys. Usually all other secrets are sealed with sealed-secrets, so this
+should be all that needs to be preserved in order to reload existing
+sealed secrets.
+
 ## Service Deployment
 
 ### Installing Tools
