@@ -38,3 +38,28 @@ spec:
           dnsZones:
             - 'xdna.net'
             - 'camh.dev'
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  namespace: cert-manager
+  name: zerossl
+spec:
+  acme:
+    server: https://acme.zerossl.com/v2/DV90
+    email: camh@xdna.net
+    externalAccountBinding:
+      keyID: TWNG4X8Hs51sK1lYmtvaqA
+      keySecretRef:
+        name: zero-ssl-eab
+        key: secret
+    privateKeySecretRef:
+      name: zerossl-key
+    solvers:
+      - http01:
+          ingress:
+            class: traefik
+        selector:
+          dnsZones:
+            - 'xdna.net'
+            - 'camh.dev'
