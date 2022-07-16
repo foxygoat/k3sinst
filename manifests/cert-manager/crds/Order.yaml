@@ -1,5 +1,5 @@
 ---
-# Source: cert-manager/templates/templates.out
+# Source: cert-manager/templates/crd-templates.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/name: 'cert-manager'
     app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
-    app.kubernetes.io/version: "v1.7.3"
+    app.kubernetes.io/version: "v1.8.2"
 spec:
   group: acme.cert-manager.io
   names:
