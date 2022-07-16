@@ -1,0 +1,15 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: zero-ssl-eab
+  namespace: cert-manager
+spec:
+  encryptedData:
+    secret: AgBTGuunIvL3t7rkhCLKiZ1+CPym+fxtXjlmYajVZZtDIbUg6PLwswNRM/VHpVgMCbNB8Vp2QB62xxjo2Km5DGzRZjxzfx8w5MS6a/X97ru483F9QxQxbMjvqskBayMzqrTuLli8MXRNxFUu6ZE3/U5s29LIu5/qkcpxVQpk3VQ0U63ymvpRAOQK7s+7yfbZoheypPKvf0LJkymO0zmkBpzVrkg8q5B+qeToBpkJgyCE9KgeU9dvRScQShmFClNMjgkFPuH0fJHKrrK6e5Avh42op5tQJWXEaH/JIc5M2dospw15VPsCLWuTjjqAHuJtMV2ab1DbupF1daWC2Bw3D1dQBTIP21YbRk9xcGkpOOERVn/lQZiZnz3J/ppG9+KNM1qTznQel2XX309k1YklslemWaGPI5hiZhpIxmCgwBNsD5wDXAcaoffRXsAVCFVxZDfsi9feKao0XPjP+8wGd6kAmOFmZHbjVPl7/hdsazmOCohGK69eH+F3pxN1y59o7sABaiuTbJpHt6i9RUofuJghh86ONxK9iKS210dI5gmfdUTGK2rofBBb6dFrbH/UgULVtLSj6nYg1FiTk0kaU/ZNVlhMSnYTCKTh2YPElchTarTqzZA+5jjADR3y8Vgqe9dzcHwQ0ozD53a8gZgnwUECUIvxovN4RrUyWRPBZhPBWk1UvXOxJn7gEJhX8INx5lUZVnySQnWxhZh9N4QCJwrxYRXTahqiF0VI9QVVu/BKuG5Yor/7u4AQExb20HgEN6DvrfGI9ea8ZvvVeU2dGZx923tdFGxYlsSLA+JwGZ1YfIIVsfVqPg==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: zero-ssl-eab
+      namespace: cert-manager
+
