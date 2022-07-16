@@ -5,7 +5,7 @@ metadata:
   namespace: whoami
   name: whoami-camh
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+    cert-manager.io/cluster-issuer: zerossl
     traefik.ingress.kubernetes.io/router.entrypoints: https
 spec:
   tls:
