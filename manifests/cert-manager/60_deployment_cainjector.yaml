@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
-    app.kubernetes.io/version: "v1.6.2"
+    app.kubernetes.io/version: "v1.7.3"
 spec:
   replicas: 1
   selector:
@@ -25,14 +25,14 @@ spec:
         app.kubernetes.io/name: cainjector
         app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/component: "cainjector"
-        app.kubernetes.io/version: "v1.6.2"
+        app.kubernetes.io/version: "v1.7.3"
     spec:
       serviceAccountName: cert-manager-cainjector
       securityContext:
         runAsNonRoot: true
       containers:
         - name: cert-manager
-          image: "quay.io/jetstack/cert-manager-cainjector:v1.6.2"
+          image: "quay.io/jetstack/cert-manager-cainjector:v1.7.3"
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
@@ -42,5 +42,3 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          resources:
-            {}
