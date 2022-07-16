@@ -91,7 +91,7 @@ clean-sealed-secrets:
 
 # --- Update CRDs -------------------------------------------------------------
 
-TRAEFIK_HELM_VERSION = v10.14.0
+TRAEFIK_HELM_VERSION = v10.24.0
 TRAEFIK_HELM_ARCHIVE = https://github.com/traefik/traefik-helm-chart/archive
 
 update-crds-traefik:
