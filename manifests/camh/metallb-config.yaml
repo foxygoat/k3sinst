@@ -1,12 +1,17 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
 metadata:
   namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-      - name: default
-        protocol: layer2
-        addresses:
-          - 10.100.110.200-10.100.110.209
+  name: default
+spec:
+  addresses:
+    - 10.100.110.200-10.100.110.209
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  namespace: metallb-system
+  name: default
+spec:
+  ipAddressPools:
+    - default

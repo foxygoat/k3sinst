@@ -50,14 +50,12 @@ uninstall:
 .PHONY: install install-k3s install-k3s-links install-systemd install-dirs uninstall
 
 install-tools:
-	(cd /tmp; GO111MODULE=on go get github.com/bitnami/kubecfg)
 	(cd /tmp; GO111MODULE=on go get github.com/bitnami-labs/sealed-secrets/cmd/kubeseal)
 
 # --- Deploy ------------------------------------------------------------------
 
 DEPLOYMENTS = sealed-secrets cert-manager metallb traefik
 KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-KUBECFG=kubecfg
 KUBECTL=kubectl
 export KUBECONFIG
 
@@ -69,9 +67,6 @@ deploy-%:
 
 undeploy-%:
 	$(KUBECTL) delete -R -f manifests/$*
-
-deploy-metallb-secret:
-	$(KUBECFG) -V rand="$$(openssl rand -base64 128)" update manifests/metallb/memberlist.jsonnet
 
 .PHONY: deploy undeploy deploy-metallb-secret
 
