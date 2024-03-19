@@ -91,19 +91,51 @@ clean-sealed-secrets:
 
 # --- Update manifests --------------------------------------------------------
 
+CM_VERSION = v1.10.1
+CM_SOURCE = https://github.com/cert-manager/cert-manager/releases/download/$(CM_VERSION)/cert-manager.yaml
+CM_MANIFEST = manifests/cert-manager/cert-manager.yaml
+CM_TMP = /tmp/cert-manager.yaml
+
+update-cert-manager:
+	curl -fsSL -o "$(CM_TMP)" "$(CM_SOURCE)"
+	kubecfg show --reorder server "$(CM_TMP)" > "$(CM_MANIFEST)"
+	rm "$(CM_TMP)"
+
+MLB_VERSION = v0.13.7
+MLB_SOURCE = https://raw.githubusercontent.com/metallb/metallb/$(MLB_VERSION)/config/manifests/metallb-native.yaml
+MLB_MANIFEST = manifests/metallb/metallb-native.yaml
+MLB_TMP = /tmp/metallb-native.yaml
+
+update-metallb:
+	curl -fsSL -o "$(MLB_TMP)" "$(MLB_SOURCE)"
+	kubecfg show --reorder server "$(MLB_TMP)" > "$(MLB_MANIFEST)"
+	rm "$(MLB_TMP)"
+
 SS_VERSION = v0.19.2
-SS_CONTROLLER = https://github.com/bitnami-labs/sealed-secrets/releases/download/$(SS_VERSION)/controller.yaml
+SS_SOURCE = https://github.com/bitnami-labs/sealed-secrets/releases/download/$(SS_VERSION)/controller.yaml
+SS_MANIFEST = manifests/sealed-secrets/cotroller.yaml
+SS_TMP = /tmp/controller.yaml
+
 update-sealed-secrets:
-	curl -fsSL -o /tmp/controller.yaml "$(SS_CONTROLLER)"
-	kubecfg show --reorder server /tmp/controller.yaml > manifests/sealed-secrets/controller.yaml
-	rm /tmp/controller.yaml
+	curl -fsSL -o "$(SS_TMP)" "$(SS_SOURCE)"
+	kubecfg show --reorder server "$(SS_TMP)" > "$(SS_MANIFEST)"
+	rm "$(SS_TMP)"
 
-# --- Update CRDs -------------------------------------------------------------
-
+TRAEFIK_VERSION = v2.8.1
 TRAEFIK_HELM_VERSION = v10.24.0
 TRAEFIK_HELM_ARCHIVE = https://github.com/traefik/traefik-helm-chart/archive
+TRAEFIK_RBAC_SOURCE = https://raw.githubusercontent.com/traefik/traefik/$(TRAEFIK_VERSION)/docs/content/reference/dynamic-configuration/kubernetes-crd-rbac.yml
+TRAEFIK_RBAC_MANIFEST = manifests/traefik/12_rbac.yaml
+TRAEFIK_name_namespace = {"name": "traefik", "namespace": "traefik"}
+TRAEFIK_DEPLOYMENT = manifests/traefik/60_deployment.yaml
 
-update-crds-traefik:
-	curl -sL $(TRAEFIK_HELM_ARCHIVE)/$(TRAEFIK_HELM_VERSION).tar.gz \
+update-traefik:
+	curl -fsSL $(TRAEFIK_HELM_ARCHIVE)/$(TRAEFIK_HELM_VERSION).tar.gz \
 		| tar zxf - -C manifests/traefik --strip-components=2 \
 			--wildcards '*/traefik/crds/*'
+	curl -fsSL "$(TRAEFIK_RBAC_SOURCE)" \
+		| yq '(select(.subjects[0]) | .subjects[0]) += $(TRAEFIK_name_namespace)' \
+		> "$(TRAEFIK_RBAC_MANIFEST)"
+	yq -i '.spec.template.spec.containers[0].image = "traefik:$(TRAEFIK_VERSION)"' $(TRAEFIK_DEPLOYMENT)
+
+.PHONY: update-cert-manager update-metallb update-sealed-secrets update-traefik
