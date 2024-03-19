@@ -89,6 +89,15 @@ clean-sealed-secrets:
 .PHONY: clean-secrets save-secrets
 .PHONY: clean-sealed-secrets save-sealed-secrets
 
+# --- Update manifests --------------------------------------------------------
+
+SS_VERSION = v0.19.2
+SS_CONTROLLER = https://github.com/bitnami-labs/sealed-secrets/releases/download/$(SS_VERSION)/controller.yaml
+update-sealed-secrets:
+	curl -fsSL -o /tmp/controller.yaml "$(SS_CONTROLLER)"
+	kubecfg show --reorder server /tmp/controller.yaml > manifests/sealed-secrets/controller.yaml
+	rm /tmp/controller.yaml
+
 # --- Update CRDs -------------------------------------------------------------
 
 TRAEFIK_HELM_VERSION = v10.24.0
