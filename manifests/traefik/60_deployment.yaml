@@ -19,7 +19,7 @@ spec:
       containers:
         - name: traefik
           image: traefik:v2.8.1
-          args: 
+          args:
             - '--configFile=/config/static.yaml'
           securityContext:
             capabilities:
@@ -37,7 +37,7 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
-          readinessProbe: 
+          readinessProbe:
             httpGet:
               path: /ping
               port: traefik
